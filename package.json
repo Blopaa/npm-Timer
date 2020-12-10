@@ -2,15 +2,16 @@
   "name": "timer",
   "version": "1.0.0",
   "description": "",
-  "main": "test.js",
   "directories": {
     "test": "test"
   },
   "scripts": {
-    "test": "jest"
+    "dev": "nodemon",
+    "test": "jest",
+    "watch": "tsc -w"
   },
   "keywords": [],
-  "author": "",
+  "author": "Blopaa",
   "license": "ISC",
   "devDependencies": {
     "@types/jest": "^26.0.18",
