@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "nodemon",
-    "test": "jest",
+    "test": "jest --watch",
     "watch": "tsc -w"
   },
   "keywords": [],

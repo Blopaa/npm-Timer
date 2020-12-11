@@ -1,6 +1,6 @@
 import { Timer } from "./Timer";
 
-const timer = new Timer("dd:hh:mm:ss")
+const timer = new Timer("ss")
 
-timer.timeCount("20:00")
+timer.timeCount("20")
 
