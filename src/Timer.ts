@@ -50,8 +50,18 @@ export class Timer {
     return true;
   }
 
+  /**
+   * Separate the time in string, to an array of integers according to the format
+   * @param time a time
+   * @param format a format record
+   */
+  private separateTimes(time:string, format:Record<string, number>): number[] {
+    const separatedTime: string[] = format['ss'] == 0 ? [time] : time.split(':');
+    return separatedTime.map(u => parseInt(u))
+  }
+
   public timeCount(initialTime: string = '00:00'): string | never {
-    let formatRecorder: Record<string, number> = {}; //will check what times are activaded
+    const formatRecorder: Record<string, number> = {}; //will check what times are activaded
     this.format.split(':').forEach((e, i) => {
       formatRecorder[e] = i;
     });
@@ -59,16 +69,8 @@ export class Timer {
     const formatIsCorrect = this.checkFormat(initialTime);
     if(!formatIsCorrect) throw new ErrorTimer();
     
-    let initialTimeSeparated: string[] | string =
-      formatRecorder['ss'] == 0 ? initialTime : initialTime.split(':');
-    let separatedTimes: number[] = [];
-    if (typeof initialTimeSeparated === 'object') {
-      for (let u of initialTimeSeparated) {
-        separatedTimes.push(parseInt(u));
-      }
-    } else {
-      separatedTimes.push(parseInt(<string>(<unknown>initialTimeSeparated)));
-    }
+    const separatedTimes = this.separateTimes(initialTime, formatRecorder)
+
     let minute: boolean = false;
 
     if (formatRecorder['ss'] >= 0) {
@@ -83,6 +85,7 @@ export class Timer {
         ++separatedTimes[formatRecorder['ss']];
       }, 1000);
     }
+    
     if (formatRecorder['mm'] >= 0) {
       if (formatRecorder['ss'] >= 0) {
         setInterval(() => {
