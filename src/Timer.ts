@@ -1,4 +1,4 @@
-import { ErrorTimer } from './Error';
+import ErrorTimer from './ErrorTimer';
 
 type timerFormat =
   | 'mm:ss'
@@ -19,56 +19,58 @@ export class Timer {
     this.format = format;
   }
 
+  /**
+   * verifies that the time entered matches the timer format
+   */
+  private checkFormat(time:string):boolean {
+    switch(this.format){
+      case 'ss':
+      case 'mm':
+        if(!time.match(this.oneTime)) return false;
+        break;
+      
+      case 'mm:ss':
+      case 'ss:ms':
+        if(!time.match(this.twoTimes)) return false;
+        break;
+
+      case 'hh:mm:mss':
+      case 'mm:ss:ms':
+        if(!time.match(this.threeTimes)) return false;
+        break;
+
+      case 'dd:hh:mm:ss':
+        if (!time.match(this.fourTimes)) return false;
+        break;
+
+      default:
+        return false;
+    }
+
+    return true;
+  }
+
+  /**
+   * Separate the time in string, to an array of integers according to the format
+   * @param time a time
+   * @param format a format record
+   */
+  private separateTimes(time:string, format:Record<string, number>): number[] {
+    const separatedTime: string[] = format['ss'] == 0 ? [time] : time.split(':');
+    return separatedTime.map(u => parseInt(u))
+  }
+
   public timeCount(initialTime: string = '00:00'): string | never {
-    let formatRecorder: Record<string, number> = {}; //will check what times are activaded
+    const formatRecorder: Record<string, number> = {}; //will check what times are activaded
     this.format.split(':').forEach((e, i) => {
       formatRecorder[e] = i;
     });
 
-    switch (
-      this.format // verify if the initial time is like the format sent
-    ) {
-      case 'ss':
-        if (!initialTime.match(this.oneTime))
-          throw new ErrorTimer().formatUnMatch();
-        break;
-      case 'mm':
-        if (!initialTime.match(this.oneTime))
-          throw new ErrorTimer().formatUnMatch();
-        break;
-      case 'dd:hh:mm:ss':
-        if (!initialTime.match(this.fourTimes))
-          throw new ErrorTimer().formatUnMatch();
-        break;
-      case 'hh:mm:mss':
-        if (!initialTime.match(this.threeTimes))
-          throw new ErrorTimer().formatUnMatch();
-        break;
-      case 'mm:ss:ms':
-        if (!initialTime.match(this.threeTimes))
-          throw new ErrorTimer().formatUnMatch();
-        break;
-      case 'mm:ss':
-        if (!initialTime.match(this.twoTimes))
-          throw new ErrorTimer().formatUnMatch();
-        break;
-      case 'ss:ms':
-        if (!initialTime.match(this.twoTimes))
-          throw new ErrorTimer().formatUnMatch();
-        break;
-      default:
-        throw new ErrorTimer().formatUnMatch();
-    }
-    let initialTimeSeparated: string[] | string =
-      formatRecorder['ss'] == 0 ? initialTime : initialTime.split(':');
-    let separatedTimes: number[] = [];
-    if (typeof initialTimeSeparated === 'object') {
-      for (let u of initialTimeSeparated) {
-        separatedTimes.push(parseInt(u));
-      }
-    } else {
-      separatedTimes.push(parseInt(<string>(<unknown>initialTimeSeparated)));
-    }
+    const formatIsCorrect = this.checkFormat(initialTime);
+    if(!formatIsCorrect) throw new ErrorTimer();
+    
+    const separatedTimes = this.separateTimes(initialTime, formatRecorder)
+
     let minute: boolean = false;
 
     if (formatRecorder['ss'] >= 0) {
@@ -83,6 +85,7 @@ export class Timer {
         ++separatedTimes[formatRecorder['ss']];
       }, 1000);
     }
+    
     if (formatRecorder['mm'] >= 0) {
       if (formatRecorder['ss'] >= 0) {
         setInterval(() => {
