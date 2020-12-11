@@ -6,7 +6,8 @@ type timerFormat =
   | 'dd:hh:mm:ss'
   | 'mm:ss:ms'
   | 'ss:ms'
-  | 'ss';
+  | 'ss'
+  | 'mm';
 
 export class Timer {
   private oneTime: RegExp = new RegExp(/^[0-9]./g);
@@ -28,6 +29,10 @@ export class Timer {
       this.format // verify if the initial time is like the format sent
     ) {
       case 'ss':
+        if (!initialTime.match(this.oneTime))
+          throw new ErrorTimer().formatUnMatch();
+        break;
+      case 'mm':
         if (!initialTime.match(this.oneTime))
           throw new ErrorTimer().formatUnMatch();
         break;
@@ -57,21 +62,45 @@ export class Timer {
     let initialTimeSeparated: string[] | string =
       formatRecorder['ss'] == 0 ? initialTime : initialTime.split(':');
     let separatedTimes: number[] = [];
-    if (typeof initialTimeSeparated === "object") {
+    if (typeof initialTimeSeparated === 'object') {
       for (let u of initialTimeSeparated) {
         separatedTimes.push(parseInt(u));
       }
     } else {
-      separatedTimes.push(parseInt(<string><unknown>initialTimeSeparated));
+      separatedTimes.push(parseInt(<string>(<unknown>initialTimeSeparated)));
     }
+    let minute: boolean = false;
+
     if (formatRecorder['ss'] >= 0) {
       setInterval(() => {
+        // console.log(separatedTimes); show seconds
         if (separatedTimes[formatRecorder['ss']] === 59) {
-          separatedTimes[formatRecorder['ss']] = 0;
+          separatedTimes[formatRecorder['ss']] = -1;
+        }
+        if (separatedTimes[formatRecorder['ss']] === 58) {
+          minute = true;
         }
         ++separatedTimes[formatRecorder['ss']];
-        //console.log(separatedTimes); show seconds counter
       }, 1000);
+    }
+    if (formatRecorder['mm'] >= 0) {
+      if (formatRecorder['ss'] >= 0) {
+        setInterval(() => {
+          if (minute) {
+            ++separatedTimes[formatRecorder['mm']];
+            minute = false;
+          }
+        });
+      } else {
+        setInterval(() => {
+          console.log(separatedTimes); 
+          if (separatedTimes[formatRecorder['mm']] === 59) {
+            separatedTimes[formatRecorder['mm']] = 0;
+          }
+          ++separatedTimes[formatRecorder['mm']];
+          console.log(separatedTimes)
+        }, 60000);
+      }
     }
 
     return 'string';
