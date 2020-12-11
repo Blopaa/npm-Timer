@@ -19,9 +19,9 @@ export class Timer {
   }
 
   public timeCount(initialTime: string = '00:00'): string | never {
-    let formatRecorder: Record<string, number> = {};
+    let formatRecorder: Record<string, number> = {}; //will check what times are activaded
     this.format.split(':').forEach((e, i) => {
-      formatRecorder[e] = i + 1;
+      formatRecorder[e] = i;
     });
 
     switch (
@@ -54,9 +54,6 @@ export class Timer {
       default:
         throw new ErrorTimer().formatUnMatch();
     }
-
-    console.log(formatRecorder);
-
     let initialTimeSeparated: string[] | string =
       formatRecorder['ss'] == 0 ? initialTime : initialTime.split(':');
     let separatedTimes: number[] = [];
@@ -67,14 +64,13 @@ export class Timer {
     } else {
       separatedTimes.push(parseInt(<string><unknown>initialTimeSeparated));
     }
-    console.log(separatedTimes)
-    if (formatRecorder['ss']) {
+    if (formatRecorder['ss'] >= 0) {
       setInterval(() => {
-        if (separatedTimes[formatRecorder['ss'] - 1] === 59) {
-          separatedTimes[formatRecorder['ss'] -1] = 0;
+        if (separatedTimes[formatRecorder['ss']] === 59) {
+          separatedTimes[formatRecorder['ss']] = 0;
         }
-        ++separatedTimes[formatRecorder['ss'] - 1];
-        console.log(separatedTimes);
+        ++separatedTimes[formatRecorder['ss']];
+        //console.log(separatedTimes); show seconds counter
       }, 1000);
     }
 
