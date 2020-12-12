@@ -86,6 +86,11 @@ export class Timer {
       }
     }
 
+    timerengine.on("tick", datos => console.log(datos))
+    setTimeout(() => {
+      console.log(timerengine.currentTime)
+    }, 4000)
+
     return 'string';
   }
 }

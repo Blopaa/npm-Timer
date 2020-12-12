@@ -1,5 +1,8 @@
+import {EventEmitter} from 'events'
 export default class TimerEngine {
   private minute: boolean = false;
+  private _actualtime: number[] = [];
+  protected emitter = new EventEmitter()
 
   constructor(
     private separatedTimes: number[],
@@ -7,11 +10,12 @@ export default class TimerEngine {
   ) {
     this.separatedTimes = separatedTimes;
     this.formatRecorder = formatRecorder;
+    this.on("tick", data => this._actualtime = data)
   }
 
   public secondsEngine() {
     setInterval(() => {
-      console.log(this.separatedTimes); //show seconds
+      this.emitter.emit("tick", this.separatedTimes)
       if (this.separatedTimes[this.formatRecorder['ss']] === 59) {
         this.separatedTimes[this.formatRecorder['ss']] = -1;
         this.minute = true;
@@ -30,7 +34,7 @@ export default class TimerEngine {
       });
     } else {
       setInterval(() => {
-        console.log(this.separatedTimes);
+        this.emitter.emit("tick", this.separatedTimes)
         if (this.separatedTimes[this.formatRecorder['mm']] === 59) {
           this.separatedTimes[this.formatRecorder['mm']] = 0;
         }
@@ -38,5 +42,13 @@ export default class TimerEngine {
         console.log(this.separatedTimes);
       }, 60000);
     }
+  }
+
+  public on(event:string, cb:(...args:any) => void):void {
+    this.emitter.on(event, cb)
+  }
+
+  public get currentTime():number[] {
+    return this._actualtime
   }
 }
