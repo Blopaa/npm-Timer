@@ -1,4 +1,5 @@
-import ErrorTimer from './ErrorTimer';
+import ErrorMatch from './Error/ErrorMatch';
+import TimerEngine from './TimerEngine'
 
 type timerFormat =
   | 'mm:ss'
@@ -67,42 +68,21 @@ export class Timer {
     });
 
     const formatIsCorrect = this.checkFormat(initialTime);
-    if(!formatIsCorrect) throw new ErrorTimer();
+    if(!formatIsCorrect) throw new ErrorMatch();
     
     const separatedTimes = this.separateTimes(initialTime, formatRecorder)
 
-    let minute: boolean = false;
+    let timerengine = new TimerEngine(separatedTimes, formatRecorder)
 
     if (formatRecorder['ss'] >= 0) {
-      setInterval(() => {
-        // console.log(separatedTimes); show seconds
-        if (separatedTimes[formatRecorder['ss']] === 59) {
-          separatedTimes[formatRecorder['ss']] = -1;
-        }
-        if (separatedTimes[formatRecorder['ss']] === 58) {
-          minute = true;
-        }
-        ++separatedTimes[formatRecorder['ss']];
-      }, 1000);
+        timerengine.secondsEngine()
     }
     
     if (formatRecorder['mm'] >= 0) {
       if (formatRecorder['ss'] >= 0) {
-        setInterval(() => {
-          if (minute) {
-            ++separatedTimes[formatRecorder['mm']];
-            minute = false;
-          }
-        });
+        timerengine.minutesEngine(true)
       } else {
-        setInterval(() => {
-          console.log(separatedTimes); 
-          if (separatedTimes[formatRecorder['mm']] === 59) {
-            separatedTimes[formatRecorder['mm']] = 0;
-          }
-          ++separatedTimes[formatRecorder['mm']];
-          console.log(separatedTimes)
-        }, 60000);
+        timerengine.minutesEngine(false)
       }
     }
 
