@@ -61,7 +61,7 @@ export class Timer {
     return separatedTime.map(u => parseInt(u))
   }
 
-  public timeCount(initialTime: string = '00:00'): string | never {
+  public timeCount(initialTime: string = '00:00'): void {
     const formatRecorder: Record<string, number> = {}; //will check what times are activaded
     this.format.split(':').forEach((e, i) => {
       formatRecorder[e] = i;
@@ -83,7 +83,5 @@ export class Timer {
     }
 
     timerengine.on("tick", datos => console.log(datos))
-
-    return 'string';
   }
 }
