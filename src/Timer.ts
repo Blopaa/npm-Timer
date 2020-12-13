@@ -75,11 +75,11 @@ export class Timer {
     let timerengine = new TimerEngine(separatedTimes, formatRecorder)
 
     if (formatRecorder['ss'] >= 0) {
-        timerengine.secondsEngine()
+        timerengine.countFowardseconds()
     }
     
     if (formatRecorder['mm'] >= 0) {
-        timerengine.minutesEngine()
+        timerengine.countFowardMinutes()
     }
 
     timerengine.on("tick", datos => console.log(datos))
