@@ -1,6 +1,5 @@
 import {EventEmitter} from 'events'
 export default class TimerEngine {
-  private minute: boolean = false;
   private _actualtime: number[] = [];
   protected emitter = new EventEmitter()
 
@@ -18,30 +17,24 @@ export default class TimerEngine {
       this.emitter.emit("tick", this.separatedTimes)
       if (this.separatedTimes[this.formatRecorder['ss']] === 59) {
         this.separatedTimes[this.formatRecorder['ss']] = -1;
-        this.minute = true;
       }
       ++this.separatedTimes[this.formatRecorder['ss']];
     }, 1000);
   }
   
-  public minutesEngine(areSeconds: boolean) {
-    if (areSeconds) {
-      setInterval(() => {
-        if (this.minute) {
-          ++this.separatedTimes[this.formatRecorder['mm']];
-          this.minute = false;
-        }
-      });
-    } else {
-      setInterval(() => {
-        this.emitter.emit("tick", this.separatedTimes)
-        if (this.separatedTimes[this.formatRecorder['mm']] === 59) {
-          this.separatedTimes[this.formatRecorder['mm']] = 0;
-        }
+  public minutesEngine() {
+    let startTime = (61 - (this.separatedTimes[this.formatRecorder['ss']])  || 0) * 1000;
+      setTimeout(() => {
         ++this.separatedTimes[this.formatRecorder['mm']];
-        console.log(this.separatedTimes);
-      }, 60000);
-    }
+        setInterval(() => {
+          this.emitter.emit("tick", this.separatedTimes)
+          if (this.separatedTimes[this.formatRecorder['mm']] === 59) {
+            this.separatedTimes[this.formatRecorder['mm']] = 0;
+          }
+          ++this.separatedTimes[this.formatRecorder['mm']];
+          console.log(this.separatedTimes);
+        }, 60000);
+      }, startTime)
   }
 
   public on(event:string, cb:(...args:any) => void):void {

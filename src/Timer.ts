@@ -79,17 +79,10 @@ export class Timer {
     }
     
     if (formatRecorder['mm'] >= 0) {
-      if (formatRecorder['ss'] >= 0) {
-        timerengine.minutesEngine(true)
-      } else {
-        timerengine.minutesEngine(false)
-      }
+        timerengine.minutesEngine()
     }
 
     timerengine.on("tick", datos => console.log(datos))
-    setTimeout(() => {
-      console.log(timerengine.currentTime)
-    }, 4000)
 
     return 'string';
   }
